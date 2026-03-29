@@ -97,7 +97,7 @@ export default function Scanner() {
       {escaneando && (
         <div className="flex flex-col items-center gap-4 w-full max-w-sm">
           <p className="text-gray-400">Apunta al código QR...</p>
-          <video ref={videoRef} className="w-full rounded-xl" playsInline muted />
+          <video ref={videoRef} className="w-full rounded-xl" playsInline muted autoPlay />
           <canvas ref={canvasRef} className="hidden" />
         </div>
       )}
