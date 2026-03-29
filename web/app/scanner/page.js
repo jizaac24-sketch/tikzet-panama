@@ -10,6 +10,7 @@ export default function Scanner() {
   const [escaneando, setEscaneando] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const streamRef = useRef(null);
 
   async function login(e) {
     e.preventDefault();
@@ -26,40 +27,50 @@ export default function Scanner() {
   async function iniciarCamara() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
+        video: { facingMode: 'environment', width: 640, height: 480 }
       });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-        setEscaneando(true);
-      }
+      streamRef.current = stream;
+      setEscaneando(true);
     } catch (err) {
-      alert('Error al acceder a la cámara: ' + err.message);
+      alert('Error: ' + err.message);
     }
   }
 
   useEffect(() => {
+    if (escaneando && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play();
+    }
+  }, [escaneando]);
+
+  useEffect(() => {
     if (!escaneando) return;
-    const jsQR = require('jsqr');
-    const intervalo = setInterval(() => {
-      if (!videoRef.current || !canvasRef.current) return;
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      ctx.drawImage(videoRef.current, 0, 0);
-      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(img.data, img.width, img.height);
-      if (code) {
-        clearInterval(intervalo);
-        validarQR(code.data);
-      }
-    }, 500);
-    return () => clearInterval(intervalo);
+    let activo = true;
+    const leer = async () => {
+      const jsQR = (await import('jsqr')).default;
+      const intervalo = setInterval(() => {
+        if (!activo || !videoRef.current || !canvasRef.current) return;
+        if (videoRef.current.readyState !== 4) return;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        ctx.drawImage(videoRef.current, 0, 0);
+        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(img.data, img.width, img.height);
+        if (code) {
+          clearInterval(intervalo);
+          validarQR(code.data);
+        }
+      }, 500);
+      return () => { activo = false; clearInterval(intervalo); };
+    };
+    leer();
   }, [escaneando]);
 
   async function validarQR(data) {
     setEscaneando(false);
+    if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
     const res = await fetch('http://192.168.100.141:3001/api/scanner/validar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -67,9 +78,6 @@ export default function Scanner() {
     });
     const json = await res.json();
     setResultado(json);
-    if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach(t => t.stop());
-    }
   }
 
   return (
