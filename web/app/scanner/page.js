@@ -25,12 +25,16 @@ export default function Scanner() {
 
   async function iniciarCamara() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-      videoRef.current.srcObject = stream;
-      videoRef.current.play();
-      setEscaneando(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+        setEscaneando(true);
+      }
     } catch (err) {
-      alert('Error al acceder a la cámara: ' + err.message + '. Asegúrate de usar HTTPS o localhost.');
+      alert('Error al acceder a la cámara: ' + err.message);
     }
   }
 
@@ -93,7 +97,7 @@ export default function Scanner() {
       {escaneando && (
         <div className="flex flex-col items-center gap-4 w-full max-w-sm">
           <p className="text-gray-400">Apunta al código QR...</p>
-          <video ref={videoRef} className="w-full rounded-xl" />
+          <video ref={videoRef} className="w-full rounded-xl" playsInline muted />
           <canvas ref={canvasRef} className="hidden" />
         </div>
       )}
