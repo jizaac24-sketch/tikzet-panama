@@ -75,7 +75,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-6">
-      <h1 className="text-3xl font-bold text-center mb-6 text-purple-400">Tikzet Panama</h1>
+      <h1 className="text-3xl font-bold text-center mb-6 text-purple-400">Westford Ticket</h1>
 
       {mensaje && <p className="text-center text-green-400 mb-4">{mensaje}</p>}
 
