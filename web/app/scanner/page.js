@@ -82,7 +82,7 @@ export default function Scanner() {
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-6 flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold text-purple-400 mb-6">Tikzet Escáner</h1>
+      <h1 className="text-3xl font-bold text-purple-400 mb-6">Westford Ticket Escáner</h1>
 
       {!logueado && (
         <form onSubmit={login} className="bg-gray-900 p-6 rounded-xl w-full max-w-sm flex flex-col gap-3">
