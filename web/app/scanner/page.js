@@ -14,7 +14,7 @@ export default function Scanner() {
 
   async function login(e) {
     e.preventDefault();
-    const res = await fetch('http://192.168.100.141:3001/api/auth/login', {
+    const res = await fetch('https://tikzet-panama-production.up.railway.app/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -71,7 +71,7 @@ export default function Scanner() {
   async function validarQR(data) {
     setEscaneando(false);
     if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
-    const res = await fetch('http://192.168.100.141:3001/api/scanner/validar', {
+    const res = await fetch('https://tikzet-panama-production.up.railway.app/api/scanner/validar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ qrData: data })

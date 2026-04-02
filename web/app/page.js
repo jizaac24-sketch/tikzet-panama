@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 
+const API = 'https://tikzet-panama-production.up.railway.app';
+
 export default function Home() {
   const [vista, setVista] = useState('inicio');
   const [token, setToken] = useState('');
@@ -11,7 +13,7 @@ export default function Home() {
   async function registrar(e) {
     e.preventDefault();
     const datos = Object.fromEntries(new FormData(e.target));
-    const res = await fetch('http://localhost:3001/api/auth/registro', {
+    const res = await fetch(`${API}/api/auth/registro`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(datos)
@@ -24,7 +26,7 @@ export default function Home() {
   async function login(e) {
     e.preventDefault();
     const datos = Object.fromEntries(new FormData(e.target));
-    const res = await fetch('http://localhost:3001/api/auth/login', {
+    const res = await fetch(`${API}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(datos)
@@ -37,7 +39,7 @@ export default function Home() {
   async function crearEvento(e) {
     e.preventDefault();
     const datos = Object.fromEntries(new FormData(e.target));
-    const res = await fetch('http://localhost:3001/api/events', {
+    const res = await fetch(`${API}/api/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify(datos)
@@ -48,7 +50,7 @@ export default function Home() {
   }
 
   async function verEventos() {
-    const res = await fetch('http://localhost:3001/api/events');
+    const res = await fetch(`${API}/api/events`);
     const json = await res.json();
     setEventos(Array.isArray(json) ? json : []);
     setVista('eventos');
@@ -57,7 +59,7 @@ export default function Home() {
   async function comprarEntrada(eventoId) {
     const nombre = prompt('Tu nombre:');
     const email = prompt('Tu email:');
-    const res = await fetch('http://localhost:3001/api/tickets/comprar', {
+    const res = await fetch(`${API}/api/tickets/comprar`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ eventoId, nombreComprador: nombre, emailComprador: email })
